@@ -1,0 +1,14 @@
+mixin form-change-multi(path, pagination)
+  form(action=path + '?_method=PATCH', method="POST", id="form-change-multi")
+    if pagination
+      input(type="hidden", name="page", value=pagination.currentPage)
+    .form-group
+      select(name="type", class="form-control")
+        option(disabled selected) --Chọn hành động--
+        option(value="active") Kích hoạt
+        option(value="inactive") Vô hiệu hóa
+        option(value="delete-all") Xóa tất cả
+        option(value="swap-position") Đổi vị trí
+    .form-group
+      input(type="text", name="ids", value="", class="form-control")
+    button.btn.btn-primary(type="submit") Thực hiện

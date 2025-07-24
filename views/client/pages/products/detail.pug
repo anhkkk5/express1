@@ -1,0 +1,14 @@
+extends ../../layouts/default.pug
+
+block main
+    .container.my-3
+        .row
+            .col-12
+                h1.mb-4 #{product.title}
+                .product-detail-image
+                    img(src=product.thumbnail, alt=product.title)
+               
+                    
+                    p.mb-4 #{product.description}
+                    p.mb-4 #{product.price}
+                    

@@ -1,0 +1,14 @@
+mixin alert-success(time)
+  if messages.success
+    .alert.alert-success(role="alert" data-time=time show-alert)
+      span= messages.success
+
+  if messages.error
+    .alert.alert-danger(role="alert" data-time=time show-alert)
+      span= messages.error
+
+mixin alert-error(time)
+  if messages.error
+    .alert.alert-danger(role="alert" data-time=time show-alert)
+      span= messages.error
+      span.close-alert(onclick="this.parentElement.style.display='none'") x
