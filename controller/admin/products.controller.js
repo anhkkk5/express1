@@ -3,6 +3,8 @@ const searchHelper = require("../../helpers/search.js");
 const getFilterStatus = require("../../helpers/filterStatus.js"); // Đổi tên import
 const getPagination = require("../../helpers/pagination.js");
 const systemConfig = require("../../config/system.js");
+const createTreeHelper = require("../../helpers/createTreeHelper.js");
+const ProductCategory = require("../../models/product-category.model");
 // [Get] /admin/products
 module.exports.index = async (req, res) => {
   let find = { deleted: false };
@@ -33,11 +35,19 @@ module.exports.index = async (req, res) => {
   );
 
   //end pagination
+  //sort
+  const sort = {};
+  if (req.query.sortKey && req.query.sortValue) {
+    sort[req.query.sortKey] = req.query.sortValue;
+  } else {
+    sort.position = "desc";
+  }
 
+  //end sort
   try {
     const products = await Product.find(find)
 
-      .sort({ position: "desc", createdAt: -1 }) // Sắp xếp theo vị trí và ngày tạo
+      .sort(sort) // Sắp xếp
       .limit(objPagination.limitItem)
       .skip(objPagination.skip);
 
@@ -163,13 +173,30 @@ module.exports.deleteItem = async (req, res) => {
 };
 // [Get] /admin/products/create
 module.exports.create = async (req, res) => {
-  res.render("admin/pages/products/create", {
-    pageTitle: "Thêm mới sản phẩm",
-    messages: {
-      success: req.flash("success"),
-      error: req.flash("error"),
-    },
-  });
+  try {
+    let find = {
+      deleted: false,
+    };
+
+    const category = await ProductCategory.find(find);
+    console.log("Raw categories found:", category);
+
+    const newCategory = createTreeHelper.tree(category);
+    console.log("Categories found:", category.length);
+    console.log("Tree structure:", JSON.stringify(newCategory, null, 2));
+
+    res.render("admin/pages/products/create", {
+      pageTitle: "Thêm mới sản phẩm",
+      messages: {
+        success: req.flash("success"),
+        error: req.flash("error"),
+      },
+      category: newCategory,
+    });
+  } catch (error) {
+    console.error("Error in create method:", error);
+    res.status(500).send("Internal Server Error");
+  }
 };
 //[Post] /admin/products/create
 module.exports.createPost = async (req, res) => {
@@ -193,16 +220,29 @@ module.exports.createPost = async (req, res) => {
 // [Get] /admin/products/edit/:id
 module.exports.edit = async (req, res) => {
   console.log(req.params.id);
-  const find = {
+
+  // Tạo riêng find cho product
+  const productFind = {
     deleted: false,
     _id: req.params.id,
   };
-  const product = await Product.findOne(find);
+
+  // Tạo riêng find cho category (giống như trong method create)
+  const categoryFind = {
+    deleted: false,
+  };
+
+  const category = await ProductCategory.find(categoryFind);
+  const newCategory = createTreeHelper.tree(category);
+
+  const product = await Product.findOne(productFind);
   console.log(product);
+
   if (!product) {
     req.flash("error", "Sản phẩm không tồn tại");
     return res.redirect(`${systemConfig.prefixAdmin}/products`);
   }
+
   res.render("admin/pages/products/edit", {
     pageTitle: "Sửa sản phẩm",
     product: product,
@@ -210,6 +250,7 @@ module.exports.edit = async (req, res) => {
       success: req.flash("success"),
       error: req.flash("error"),
     },
+    category: newCategory,
   });
 };
 // [Patch] /admin/products/edit/:id

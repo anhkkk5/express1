@@ -1,16 +1,14 @@
 const { default: mongoose } = require("mongoose");
 const slug = require("mongoose-slug-generator");
 mongoose.plugin(slug);
-const productSchema = new mongoose.Schema(
+const productCategorySchema = new mongoose.Schema(
   {
     title: String,
-    product_category_id: {
+    parent_id: {
       type: String,
       default: "",
     },
     description: String,
-    price: Number,
-    discountPercentage: Number,
     status: String,
     position: Number,
     slug: {
@@ -21,7 +19,7 @@ const productSchema = new mongoose.Schema(
       type: Boolean,
       default: false, // Mặc định là không bị xóa
     },
-    stock: Number,
+
     thumbnail: String,
     deletedAt: Date,
   },
@@ -30,6 +28,10 @@ const productSchema = new mongoose.Schema(
   }
 );
 
-const Product = mongoose.model(`Product`, productSchema, "products");
+const ProductCategory = mongoose.model(
+  `ProductCategory`,
+  productCategorySchema,
+  "products-category"
+);
 
-module.exports = Product;
+module.exports = ProductCategory;

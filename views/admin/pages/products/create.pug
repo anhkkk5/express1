@@ -1,8 +1,16 @@
 extends ../../layouts/default.pug
 include ../../mixins/alert.pug
+include ../../mixins/select-tree.pug
 block main
   h1.mb-4 Thêm mới sản phẩm
   +alert-error(5000)
+  
+  // Debug info
+  //- if(category)
+  //-   p Debug: Số lượng danh mục: #{category.length}
+  //-   p Debug: Dữ liệu danh mục: #{JSON.stringify(category)}
+  //- else
+  //-   p Debug: Không có dữ liệu danh mục
   form(
     action=`${prefixAdmin}/products/create`
     method="POST"
@@ -17,10 +25,32 @@ block main
         required
       )
 
+    div(class="form-group")
+      label(for="product_category_id") Danh mục 
+      select(
+          name="product_category_id"   
+          id="product_category_id"
+          class="form-control"
+      )
+          option(value="") Chọn danh mục 
+          if(category && category.length > 0)
+              +select-tree(category,1)
+          else
+              option(value="") Không có danh mục nào  
+
     div.form-group
       label(for="desc") Mô tả
       textarea#desc.form-control(
+        class="form-control textarea-mce"
         name="desc"
+        rows="5"
+        
+      )
+    div.form-group
+      label(for="desc") Nội dung
+      textarea#content.form-control(
+        class="form-control textarea-mce"
+        name="content"
         rows="5"
         
       )

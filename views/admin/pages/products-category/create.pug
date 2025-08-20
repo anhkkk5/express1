@@ -1,0 +1,108 @@
+extends ../../layouts/default.pug
+include ../../mixins/alert.pug
+include ../../mixins/select-tree.pug
+block main 
+    +alert-success(messages.success)
+    +alert-error(messages.error)
+    h1(class="mb-4") Tạo danh mục sản phẩm
+
+    form(
+        action=`${prefixAdmin}/products-category/create`
+        method="POST"
+        enctype="multipart/form-data"
+    )
+        div(class="form-group")
+            label(for="title") Tiêu đề
+            input(
+                type="text"
+                class="form-control"
+                id="title"
+                name="title"
+                required
+            )    
+        div(class="form-group")
+            label(for="parent_id") Danh mục cha
+            select(
+                name="parent_id"   
+                id="parent_id"
+                class="form-control"
+            )
+                option(value="") Chọn danh mục cha
+                if(records)
+                    +select-tree(records)
+                   
+
+
+        div(class="form-group")
+            label(for="desc") Mô tả
+            textarea(
+                class="form-control"
+                id="desc"
+                name="description"
+                rows="5"
+                placeholder="Nhập mô tả danh mục..."
+            )
+        
+        div(
+            class="form-group"
+            upload-image
+            )
+            label(for="thumbnail") Ảnh đại diện
+            input(
+                type="file"
+                class="form-control-file"
+                id="thumbnail"
+                name="thumbnail"
+                accept="image/*"
+                upload-image-input
+            )
+            img(
+                src=""
+                class="img-fluid mt-2"
+                id="thumbnail-preview"
+                alt=""
+                style="max-width: 200px; display: none;"
+            )
+        div(class="form-group")
+            label(for="position") vị trí
+            input(
+                type="number"
+                class="form-control"
+                id="position"
+                name="position"
+               
+                min="1"
+            )
+        div(class="form-group form-check form-check-inline")    
+            input(
+                type="radio"
+                class="form-check-input"
+                id="statusActive"
+                name="status"
+                value="active"
+                checked
+            )
+            label(for="statusActive") Hoạt động
+        div(class="form-group form-check form-check-inline")    
+            input(
+                type="radio"
+                class="form-check-input"
+                id="statusInactive"
+                name="status"
+                value="inactive"
+                
+            )
+            label(for="statusInactive") Không hoạt động
+
+        div(class="form-group")
+            button(type="submit" class="btn btn-primary") Tạo mới
+            a(href=`${prefixAdmin}/products-category` class="btn btn-secondary") Quay lại
+        
+
+
+
+ 
+
+
+        
+               

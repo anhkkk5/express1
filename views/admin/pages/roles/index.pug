@@ -1,0 +1,39 @@
+extends ../../layouts/default.pug
+
+
+block main
+    h1(class="mb-4") Nhóm quyền 
+
+    .card.mb-3 
+        .card-header Danh sách 
+        .card-body 
+            .d-flex.justify-content-end.mb-3
+                a(
+                    href=`${prefixAdmin}/roles/create`
+                    class="btn btn-outline-success"
+                ) + Thêm mới
+            table.table.table-bordered
+                thead
+                    tr
+                        th STT
+                        th Nhóm quyền
+                        th Mô tả ngắn
+                        th Hành động
+                tbody
+                    if records && records.length
+                        each record, index in records
+                            tr
+                                td #{index + 1}
+                                td #{record.title}
+                                td #{record.description}
+                                td
+                                    a.btn.btn-sm.btn-primary(href=`${prefixAdmin}/roles/edit/${record._id}`) Sửa
+                                    a.btn.btn-sm.btn-secondary(href=`${prefixAdmin}/roles/detail/${record._id}`) Chi tiết
+                                    a.btn.btn-sm.btn-danger.ml-2(href=`${prefixAdmin}/roles/delete/${record._id}` onclick="return confirm('Bạn có chắc muốn xóa nhóm quyền này?')") Xóa
+
+                    else
+                        tr
+                            td(colspan="4" class="text-center") Không có dữ liệu
+  
+
+ 

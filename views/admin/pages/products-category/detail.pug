@@ -1,0 +1,102 @@
+extends ../../layouts/default.pug
+include ../../mixins/alert.pug
+
+block main
+  +alert-success(messages.success)
+  +alert-error(messages.error)
+  h1.mb-4 Chi tiết danh mục sản phẩm
+  
+  .card
+    .card-header
+      h5.card-title Thông tin danh mục
+    .card-body
+      .row
+        .col-md-6
+          .form-group
+            label.font-weight-bold Tiêu đề:
+            p #{category.title}
+          
+          .form-group
+            label.font-weight-bold Mô tả:
+            p #{category.description || 'Không có mô tả'}
+          
+          .form-group
+            label.font-weight-bold Vị trí:
+            p #{category.position}
+          
+          .form-group
+            label.font-weight-bold Trạng thái:
+            if category.status === 'active'
+              span.badge.badge-success Hoạt động
+            else
+              span.badge.badge-secondary Không hoạt động
+        
+        .col-md-6
+          .form-group
+            label.font-weight-bold Slug:
+            p #{category.slug}
+          
+          .form-group
+            label.font-weight-bold Ngày tạo:
+            p #{new Date(category.createdAt).toLocaleDateString('vi-VN')}
+          
+          .form-group
+            label.font-weight-bold Ngày cập nhật:
+            p #{new Date(category.updatedAt).toLocaleDateString('vi-VN')}
+          
+          if category.thumbnail
+            .form-group
+              label.font-weight-bold Hình ảnh:
+              img.img-thumbnail(src=category.thumbnail alt=category.title style="max-width: 200px;")
+      
+      if parentCategory
+        .row.mt-3
+          .col-12
+            .form-group
+              label.font-weight-bold Danh mục cha:
+              p
+                a(href=`/admin/products-category/detail/${parentCategory._id}`) #{parentCategory.title}
+      
+      if childCategories && childCategories.length > 0
+        .row.mt-3
+          .col-12
+            .form-group
+              label.font-weight-bold Danh mục con:
+              ul.list-group
+                each child in childCategories
+                  li.list-group-item
+                    a(href=`/admin/products-category/detail/${child._id}`) #{child.title}
+                    span.badge.badge-info.ml-2 #{child.status}
+  
+  .mt-4
+    a.btn.btn-primary(href=`/admin/products-category/edit/${category._id}`) Sửa danh mục
+    a.btn.btn-secondary.ml-2(href="/admin/products-category") Quay lại
+    button.btn.btn-danger.ml-2(
+      onclick="deleteCategory('" + category._id + "')"
+    ) Xóa danh mục
+
+  script.
+    function deleteCategory(id) {
+      if (!id) {
+        alert('ID danh mục không hợp lệ!');
+        return;
+      }
+      
+      if (confirm('Bạn có chắc chắn muốn xóa danh mục này?')) {
+        fetch(`/admin/products-category/delete/${id}`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }).then(response => {
+          if (response.ok) {
+            window.location.href = '/admin/products-category';
+          } else {
+            alert('Có lỗi xảy ra khi xóa danh mục');
+          }
+        }).catch(error => {
+          console.error('Error:', error);
+          alert('Có lỗi xảy ra khi xóa danh mục');
+        });
+      }
+    }

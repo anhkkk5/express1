@@ -1,10 +1,10 @@
 // [button-status] - Xử lý khi người dùng nhấn các nút lọc theo trạng thái sản phẩm
 const buttonStatus = document.querySelectorAll("[button-status]"); // Lấy tất cả các phần tử có thuộc tính 'button-status'
-console.log(buttonStatus);
+// console.log(buttonStatus);
 
 // Tạo đối tượng URL từ đường dẫn hiện tại của trình duyệt
 let url = new URL(window.location.href);
-console.log(url);
+// console.log(url);
 
 // Nếu có ít nhất 1 nút button-status được tìm thấy
 if (buttonStatus.length > 0) {
@@ -23,7 +23,7 @@ if (buttonStatus.length > 0) {
       }
 
       // In URL mới ra console (chỉ để debug)
-      console.log(url.href);
+      // console.log(url.href);
 
       // Chuyển hướng trình duyệt sang URL mới → reload trang với filter mới
       window.location.href = url.href;
@@ -49,7 +49,7 @@ if (formSearch) {
 // [end form search]
 // pagination
 const buttonPagination = document.querySelectorAll("[button-pagination]"); // Lấy tất cả các nút phân trang
-console.log("buttonPagination", buttonPagination);
+// console.log("buttonPagination", buttonPagination);
 if (buttonPagination.length > 0) {
   buttonPagination.forEach((button) => {
     button.addEventListener("click", () => {
@@ -70,9 +70,9 @@ if (checkboxMulti) {
   const inputCheckAll = checkboxMulti.querySelector("input[name='checkall']");
   const inputsId = checkboxMulti.querySelectorAll("input[name='ids']"); // phải là 'ids' chứ không phải 'id'
 
-  console.log("checkboxMulti", checkboxMulti);
-  console.log("inputCheckAll", inputCheckAll);
-  console.log("inputsId", inputsId);
+  // console.log("checkboxMulti", checkboxMulti);
+  // console.log("inputCheckAll", inputCheckAll);
+  // console.log("inputsId", inputsId);
 
   // Gắn sự kiện chọn tất cả
   inputCheckAll.addEventListener("click", () => {
@@ -95,6 +95,27 @@ if (checkboxMulti) {
     });
   });
   // [end checkbox multi]
+
+  // Xử lý preview ảnh upload
+  const uploadImageInputs = document.querySelectorAll("[upload-image-input]");
+  if (uploadImageInputs.length > 0) {
+    uploadImageInputs.forEach((input) => {
+      input.addEventListener("change", function (e) {
+        const file = e.target.files[0];
+        const preview = this.parentElement.querySelector("#thumbnail-preview");
+
+        if (file && preview) {
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            preview.src = e.target.result;
+            preview.style.display = "block";
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+    });
+  }
+  // [end upload image preview]
 }
 
 // form change multi
@@ -108,7 +129,7 @@ if (formChangeMulti) {
       "input[name='ids']:checked"
     );
     const typeChange = e.target.elements.type.value; // Lấy giá trị của trường 'type'
-    console.log("typechange", typeChange);
+    // console.log("typechange", typeChange);
 
     if (typeChange == "delete-all") {
       const isConfirmed = confirm(
@@ -137,7 +158,7 @@ if (formChangeMulti) {
           if (positionInput) {
             const currentPosition = positionInput.value.trim();
             positions.push(currentPosition);
-            console.log("position:", currentPosition);
+            // console.log("position:", currentPosition);
           }
         });
 
@@ -164,7 +185,7 @@ if (formChangeMulti) {
 // show alert
 const showAlert = document.querySelector("[show-alert]"); // Lấy phần tử có thuộc tính 'showAlert'
 if (showAlert) {
-  console.log("showAlert", showAlert);
+  // console.log("showAlert", showAlert);
   const time = parseInt(showAlert.getAttribute("data-time")); // Lấy thời gian hiển thị từ thuộc tính 'data-time', mặc định là 5000ms
   setTimeout(() => {
     showAlert.classList.add("alert-hidden"); // Ẩn thông báo sau thời gian đã định
@@ -181,7 +202,7 @@ if (uploadImage) {
   );
   if (uploadImageInput) {
     uploadImageInput.addEventListener("change", (e) => {
-      console.log("e", e);
+      // console.log("e", e);
       const file = e.target.files[0];
       if (file) {
         uploadPreviewInput.src = URL.createObjectURL(file);
@@ -198,3 +219,42 @@ if (uploadImage) {
   }
 }
 // end upload img
+
+//sort
+// xắp xếp
+const sort = document.querySelector("[sort]");
+if (sort) {
+  const sortSelect = sort.querySelector("[sort-select]");
+  const sortClear = sort.querySelector("[sort-clear]");
+  if (sortSelect) {
+    sortSelect.addEventListener("change", (e) => {
+      const value = e.target.value;
+      const [sortKey, sortValue] = value.split("-");
+      // console.log(sortKey);
+      url.searchParams.set("sortKey", sortKey);
+      url.searchParams.set("sortValue", sortValue);
+      window.location.href = url.href;
+    });
+  }
+  // xóa sắp xếp
+  sortClear.addEventListener("click", () => {
+    url.searchParams.delete("sortKey");
+    url.searchParams.delete("sortValue");
+    window.location.href = url.href;
+  });
+  // end xóa sắp xếp
+  // thêm selected cho option
+  const sortKey = url.searchParams.get("sortKey");
+  const sortValue = url.searchParams.get("sortValue");
+
+  if (sortKey && sortValue) {
+    const stringSort = `${sortKey}-${sortValue}`;
+    console.log(stringSort);
+    const optionSelected = sortSelect.querySelector(
+      `option[value="${stringSort}"]`
+    );
+    console.log(optionSelected);
+    optionSelected.selected = true;
+  }
+}
+//end sort

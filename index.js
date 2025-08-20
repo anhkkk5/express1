@@ -11,13 +11,18 @@ const app = express();
 const port = process.env.PORT;
 app.use(methodOverride("_method"));
 app.use(bodyParser.urlencoded({ extended: false }));
-const database = require("./config/database");
-database.connect();
-const route = require("./routes/client/index.route");
-const routeAdmin = require("./routes/admin/index.route");
 const systemConfig = require("./config/system");
-//cấu hình pug
+const database = require("./config/database");
 
+// cấu hình tinymce
+var path = require("path");
+app.use(
+  "/tinymce",
+  express.static(path.join(__dirname, "node_modules", "tinymce"))
+);
+// end cấu hình tinymce
+
+//cấu hình pug
 app.set("view engine", "pug");
 app.set("views", `${__dirname}/views`);
 
@@ -39,9 +44,26 @@ app.locals.prefixAdmin = systemConfig.prefixAdmin;
 
 console.log(__dirname);
 app.use(express.static(`${__dirname}/public`));
-//Routes
-route(app);
-routeAdmin(app);
-app.listen(port, () => {
-  console.log(`Server đang chạy tại http://localhost:${port}`);
-});
+
+// Đảm bảo database được kết nối trước khi load routes
+(async () => {
+  try {
+    await database.connect();
+    console.log("Database connection established");
+
+    // Load routes sau khi database đã kết nối
+    const route = require("./routes/client/index.route");
+    const routeAdmin = require("./routes/admin/index.route");
+
+    //Routes
+    route(app);
+    routeAdmin(app);
+
+    app.listen(port, () => {
+      console.log(`Server đang chạy tại http://localhost:${port}`);
+    });
+  } catch (error) {
+    console.error("Failed to start server:", error);
+    process.exit(1);
+  }
+})();

@@ -1,5 +1,6 @@
 extends ../../layouts/default.pug
 include ../../mixins/alert.pug
+include ../../mixins/select-tree.pug
 block main
   +alert-error(5000)
   h1.mb-4 Chỉnh sửa sản phẩm
@@ -20,6 +21,20 @@ block main
         value=product.title
         
       )
+
+
+    div(class="form-group")
+      label(for="product_category_id") Danh mục 
+      select(
+          name="product_category_id"   
+          id="product_category_id"
+          class="form-control"
+      )
+        option(value="") Chọn danh mục 
+        if(category && category.length > 0)
+            +select-tree(category,1,product.product_category_id)
+        else
+            option(value="") Không có danh mục nào    
 
     div.form-group
       label(for="desc") Mô tả
