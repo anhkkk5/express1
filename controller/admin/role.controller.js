@@ -64,3 +64,33 @@ module.exports.editPatch = async (req, res) => {
     res.redirect("back");
   }
 };
+//[Get] /admin/roles/permissions
+module.exports.permissions = async (req, res) => {
+  let find = {
+    deleted: false,
+  };
+
+  const records = await Role.find(find);
+  res.render("admin/pages/roles/permissions", {
+    pageTitle: "Phân quyền",
+    records: records,
+  });
+};
+//[Patch] /admin/roles/permissions
+module.exports.permissionsPatch = async (req, res) => {
+  try {
+    const permissions = JSON.parse(req.body.permissions);
+    for (const item of permissions) {
+      await Role.updateOne({ _id: item.id }, { permissions: item.permissions });
+    }
+    // Sử dụng res.redirect(req.get('referer')) để quay lại trang trước
+    res.redirect(
+      req.get("referer") || `${systemConfig.prefixAdmin}/roles/permissions`
+    );
+  } catch (error) {
+    // Nếu có lỗi, cũng quay lại trang trước và có thể thêm flash message nếu muốn
+    res.redirect(
+      req.get("referer") || `${systemConfig.prefixAdmin}/roles/permissions`
+    );
+  }
+};
