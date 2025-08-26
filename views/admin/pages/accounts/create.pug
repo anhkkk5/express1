@@ -1,0 +1,52 @@
+extends ../../layouts/default.pug
+include ../../mixins/alert.pug
+
+block main
+    +alert-success("5000")
+    h1(class="mb-4") Thêm mới tài khoản
+
+    form(
+        action=`${prefixAdmin}/accounts/create`
+        method="POST"
+        enctype="multipart/form-data"
+    )
+        .form-group
+            label(for="fullName") Họ tên *
+            input#fullName.form-control(type="text" name="fullName" required)    
+
+        .form-group
+            label(for="email") Email *
+            input#email.form-control(type="email" name="email" required)    
+        
+        .form-group
+            label(for="password") Mật khẩu *
+            input#password.form-control(type="password" name="password" required)    
+        
+        .form-group
+            label(for="phone") Số điện thoại *
+            input#phone.form-control(type="text" name="phone" required)    
+
+        .form-group
+            label(for="avatar") Avatar
+            input#avatar.form-control-file(type="file" name="avatar" upload-image-input)
+            img.image-preview.mt-2(src="" upload-image-preview style="max-height:100px") 
+
+        div #{roles}
+        .form-group
+            label(for="role_id") Phân quyền *
+            select#role_id.form-control(name="role_id" required) 
+                option(disabled selected) --chọn--
+                each item in roles
+                    option(value=item._id) #{item.title}
+                    
+        .form-group
+            div.form-check.form-check-inline
+                input#statusActive.form-check-input(type="radio" name="status" value="active" checked)    
+                label.form-check-label(for="statusActive") Hoạt động 
+
+            div.form-check.form-check-inline
+                input#statusInactive.form-check-input(type="radio" name="status" value="inactive")    
+                label.form-check-label(for="statusInactive") Dừng hoạt động 
+
+        .form-group
+            button.btn.btn-primary(type="submit") Tạo mới

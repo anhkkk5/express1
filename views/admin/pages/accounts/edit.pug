@@ -1,0 +1,41 @@
+extends ../../layouts/default.pug
+include ../../mixins/alert.pug
+
+block main 
+    +alert-success("5000")
+    h1(class="mb-4") Cập nhật tài khoản
+
+    form(action=`${prefixAdmin}/accounts/edit/${record._id}?_method=PATCH` method="POST" enctype="multipart/form-data")
+        .card
+            .card-header Nhập thông tin
+            .card-body
+                .form-group
+                    label(for="fullName") Họ tên
+                    input#fullName.form-control(type="text" name="fullName" value=record.fullName required)
+                .form-group
+                    label(for="email") Email
+                    input#email.form-control(type="email" name="email" value=record.email required)
+                .form-group
+                    label(for="phone") Số điện thoại
+                    input#phone.form-control(type="text" name="phone" value=record.phone)
+                .form-group
+                    label(for="password") Mật khẩu (để trống nếu không đổi)
+                    input#password.form-control(type="password" name="password" placeholder="••••••••")
+                .form-group
+                    label(for="role_id") Nhóm quyền
+                    select#role_id.form-control(name="role_id")
+                        each r in roles
+                            option(value=r._id selected=(r._id == record.role_id) ? true : false) #{r.title}
+                .form-group
+                    label(for="status") Trạng thái
+                    select#status.form-control(name="status")
+                        option(value="active" selected=record.status==='active') Hoạt động
+                        option(value="inactive" selected=record.status!=='active') Dừng hoạt động
+                .form-group
+                    label(for="avatar") Ảnh đại diện
+                    input#avatar.form-control(type="file" name="avatar" accept="image/*")
+                    if record.avatar
+                        img(src=record.avatar alt="avatar" style="max-height:80px" class="mt-2")
+            .card-footer
+                button.btn.btn-primary(type="submit") Lưu thay đổi
+                a.btn.btn-secondary.ml-2(href=`${prefixAdmin}/accounts`) Hủy

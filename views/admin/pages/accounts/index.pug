@@ -1,0 +1,52 @@
+extends ../../layouts/default.pug
+include ../../mixins/alert.pug
+
+block main 
+    +alert-success("5000")
+    h1(class="mb-4") Danh sách tài khoản
+
+    .card.mb-3 
+        .card-header Danh sách 
+        .card-body 
+            .row 
+                .col-8 
+                .col-4.text-right 
+                    a(
+                        href=`${prefixAdmin}/accounts/create`
+                        class="btn btn-outline-success" 
+                    ) + Thêm mới
+
+            // Bảng danh sách tài khoản
+            table.table.table-bordered.table-hover.mt-3
+                thead
+                    tr
+                        th STT
+                        th Họ tên
+                        th Email
+                        th Số điện thoại
+                        th Phân quyền
+                        th Trạng thái
+                        th Hành động
+                tbody
+                    if records && records.length
+                        each record, idx in records
+                            tr
+                                td #{idx + 1}
+                                td #{record.fullName}
+                                td #{record.email}
+                                td #{record.phone}
+                                td #{record.role.title}
+                                td 
+                                    if record.status == 'active'
+                                        span.badge.badge-success Hoạt động
+                                    else
+                                        span.badge.badge-secondary Dừng hoạt động
+                                td
+                                    a.btn.btn-sm.btn-info.mr-1(href=`${prefixAdmin}/accounts/detail/${record._id}`) Chi tiết
+                                    a.btn.btn-sm.btn-primary.mr-1(href=`${prefixAdmin}/accounts/edit/${record._id}`) Sửa
+                                    form(action=`${prefixAdmin}/accounts/delete/${record._id}?_method=DELETE` method="POST" style="display:inline" onsubmit="return confirm('Bạn có chắc chắn muốn xóa tài khoản này?');")
+                                        button.btn.btn-sm.btn-danger(type="submit") Xóa
+                    else
+                        tr
+                            td(colspan="7" class="text-center") Không có tài khoản nào
+                
